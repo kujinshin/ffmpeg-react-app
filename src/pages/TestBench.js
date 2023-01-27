@@ -15,6 +15,7 @@ export const TestBench = () => {
   const [videoMetadata, setVideoMetadata] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState('');
   const [outputSrc, setOutputSrc] = useState();
+  const [outputTime, setOutputTime] = useState(0);
 
   const [commandOptions, setCommandOptions] = useState();
 
@@ -25,11 +26,18 @@ export const TestBench = () => {
 
   const onFormSubmit = async (formData) => {
     setOutputSrc(null);
+    const start = performance.now();
     const outputSrc = await ExecuteBoomerangCommand({
       videoMetadata,
       ffmpeg,
       ...formData
     });
+
+    const stop = performance.now();
+
+    const inSeconds = (stop - start) / 1000;
+    const rounded = Number(inSeconds).toFixed(3);
+    setOutputTime(rounded);
     setOutputSrc(outputSrc);
 
     // Example of running the Trim command
@@ -58,7 +66,12 @@ export const TestBench = () => {
       </div>
       <div>
         {outputSrc && (
-          <a target="_blank" href={outputSrc}>Link</a>
+          <div style={{paddingTop: '1rem'}}>
+            <a target="_blank" href={outputSrc}>Link</a>
+            <div style={{display: 'block'}}>
+              <span>Generated in {outputTime}s</span>
+            </div>
+          </div>
           // <video
           //   src={outputSrc}
           //   autoPlay
