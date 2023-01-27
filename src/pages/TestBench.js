@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import { TestBenchForm } from '../components/TestBenchForm';
 import { UploadVideoFileInput } from '../components/UploadVideoFileInput';
 import { WasmContext } from '../context/WasmContext';
-import { ExecuteBoomerangCommand, ExecuteTrimCommand } from '../service/ffmpegUtils';
+import { ExecuteBoomerangCommand, ExecuteTrimCommand, GenerateOneThumbnail } from '../service/ffmpegUtils';
 import { Timeline } from '../components/Timeline';
 
 const FEATURE_OPTIONS = ['Boomerang', 'Thumbnail', 'Trimming'];
@@ -14,8 +14,6 @@ export const TestBench = () => {
   const [outputSrc, setOutputSrc] = useState();
   const [outputTime, setOutputTime] = useState(0);
 
-  const [commandOptions, setCommandOptions] = useState();
-
   const handleFileLoaded = fileData => {
     console.log(fileData);
     setVideoMetadata(fileData);
@@ -25,7 +23,8 @@ export const TestBench = () => {
     setOutputSrc(null);
     const start = performance.now();
     const { feature } = formData;
-
+    setSelectedFeature(feature);
+    
     let outputSrc;
     if (feature === 'Boomerang') {
       outputSrc = await ExecuteBoomerangCommand({
@@ -33,6 +32,12 @@ export const TestBench = () => {
         ffmpeg,
         ...formData
       });
+    } else if(feature === 'Thumbnail') {
+      outputSrc = await GenerateOneThumbnail({
+        videoMetadata,
+        ffmpeg,
+        ...formData
+      })
     } else {
       throw new Error(`unimplemented feature ${feature}`);
     }
@@ -72,13 +77,10 @@ export const TestBench = () => {
             <div style={{ display: 'block' }}>
               <span>Generated in {outputTime}s</span>
             </div>
+            {
+              selectedFeature === 'Thumbnail' && <img src={outputSrc} alt='thumbnail' style={{width: '100%', height: '100%'}} />
+            }
           </div>
-          // <video
-          //   src={outputSrc}
-          //   autoPlay
-          //   loop
-          //   // style={{ width: '100%', height: '100%' }}
-          // />
         )}
       </div>
     </div>
