@@ -75,3 +75,21 @@ export const ExecuteTrimCommand = async ({ videoMetadata, ffmpeg, startTime, end
 
   return URL.createObjectURL(new Blob([data.buffer], { type: videoMetadata.type }));
 };
+
+export const GenerateOneThumbnail = async ({ videoMetadata, ffmpeg, seconds }) => {
+  const screenshotTimestamp = getFFMpegTimestampFromSeconds(seconds);
+  ffmpeg.FS('writeFile', 'screenshot-temp.mp4', await fetchFile(videoMetadata.src));
+  await ffmpeg.run(
+    '-ss',
+    screenshotTimestamp,
+    '-i',
+    'screenshot-temp.mp4',
+    '-vf',
+    'select=eq(n\\,0)',
+    '-f',
+    'image2',
+    'screenshot.jpg'
+  );
+  const data = ffmpeg.FS('readFile', 'screenshot.jpg');
+  return URL.createObjectURL(new Blob([data.buffer]));
+};
