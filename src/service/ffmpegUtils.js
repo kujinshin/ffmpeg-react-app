@@ -47,9 +47,11 @@ export const ExecuteBoomerangCommand = async ({
     `[0]scale=-2:${targetHeight},setsar=1:1[s];[s]split[s1][s2];[s1]reverse[r];[s2][r]concat=n=2[out]`,
     '-map',
     '[out]',
-    intermediaryFileName
+    loopCount > 1 ? intermediaryFileName : OUTPUT_FILE_NAME
   );
-  await ffmpeg.run(...createLoopConcatCommand(loopCount, intermediaryFileName), OUTPUT_FILE_NAME);
+  if(loopCount > 1) {
+    await ffmpeg.run(...createLoopConcatCommand(loopCount, intermediaryFileName), OUTPUT_FILE_NAME);
+  }
 
   const data = ffmpeg.FS('readFile', OUTPUT_FILE_NAME);
 
