@@ -16,6 +16,7 @@ form {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
+  flex-direction: column;
 }
 
 .form-control {

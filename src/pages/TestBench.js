@@ -2,10 +2,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import { TestBenchForm } from '../components/TestBenchForm';
 import { UploadVideoFileInput } from '../components/UploadVideoFileInput';
 import { WasmContext } from '../context/WasmContext';
-import {
-  ExecuteBoomerangCommand,
-  ExecuteTrimCommand
-} from '../service/ffmpegUtils';
+import { ExecuteBoomerangCommand, ExecuteTrimCommand } from '../service/ffmpegUtils';
 import { Timeline } from '../components/Timeline';
 
 const FEATURE_OPTIONS = ['Boomerang', 'Thumbnail', 'Trimming'];
@@ -24,14 +21,21 @@ export const TestBench = () => {
     setVideoMetadata(fileData);
   };
 
-  const onFormSubmit = async (formData) => {
+  const onFormSubmit = async formData => {
     setOutputSrc(null);
     const start = performance.now();
-    const outputSrc = await ExecuteBoomerangCommand({
-      videoMetadata,
-      ffmpeg,
-      ...formData
-    });
+    const { feature } = formData;
+
+    let outputSrc;
+    if (feature === 'Boomerang') {
+      outputSrc = await ExecuteBoomerangCommand({
+        videoMetadata,
+        ffmpeg,
+        ...formData
+      });
+    } else {
+      throw new Error(`unimplemented feature ${feature}`);
+    }
 
     const stop = performance.now();
 
@@ -57,18 +61,15 @@ export const TestBench = () => {
       </div>
       <Timeline videoMetadata={videoMetadata} />
       <div id='feature-select' style={{ paddingTop: '1rem' }}>
-        {videoMetadata && (
-          <TestBenchForm 
-            fileData={videoMetadata} 
-            onSubmit={onFormSubmit}
-          /> 
-        )}
+        {videoMetadata && <TestBenchForm fileData={videoMetadata} onSubmit={onFormSubmit} />}
       </div>
       <div>
         {outputSrc && (
-          <div style={{paddingTop: '1rem'}}>
-            <a target="_blank" href={outputSrc}>Link</a>
-            <div style={{display: 'block'}}>
+          <div style={{ paddingTop: '1rem' }}>
+            <a target='_blank' href={outputSrc}>
+              Link
+            </a>
+            <div style={{ display: 'block' }}>
               <span>Generated in {outputTime}s</span>
             </div>
           </div>
