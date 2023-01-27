@@ -6,6 +6,7 @@ const getFFMpegTimestampFromSeconds = seconds => {
   return date.toISOString().slice(11, 23);
 };
 
+// forces silent audio, we can think of a better way to deal with optional audio streams when it's not hack day
 const createLoopConcatCommand = (loopCount, filename) => {
   let inputs = [];
   let streams = [];
@@ -26,7 +27,6 @@ export const ExecuteBoomerangCommand = async ({
   duration = 1,
   loopCount = 1
 }) => {
-  console.log(videoMetadata);
   let filenameParts = videoMetadata.name.split('.');
 
   const intermediaryFileName = `${filenameParts.slice(0, filenameParts.length - 1).join('.')}-intermediary.${
@@ -50,7 +50,6 @@ export const ExecuteBoomerangCommand = async ({
     intermediaryFileName
   );
   await ffmpeg.run(...createLoopConcatCommand(loopCount, intermediaryFileName), OUTPUT_FILE_NAME);
-  //await ffmpeg.run('-stream_loop', loopCount, '-i', intermediaryFileName, '-c', 'copy', OUTPUT_FILE_NAME);
 
   const data = ffmpeg.FS('readFile', OUTPUT_FILE_NAME);
 
