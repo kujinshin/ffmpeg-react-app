@@ -58,14 +58,14 @@ export const ExecuteBoomerangCommand = async ({
   return URL.createObjectURL(new Blob([data.buffer], { type: videoMetadata.type }));
 };
 
-export const ExecuteTrimCommand = async ({ videoMetadata, ffmpeg, startTime, endTime }) => {
+export const ExecuteTrimCommand = async ({ videoMetadata, ffmpeg, trimStartTime, trimEndTime }) => {
   const OUTPUT_FILE_NAME = `out_${videoMetadata.name}`;
   ffmpeg.FS('writeFile', videoMetadata.name, await fetchFile(videoMetadata.src));
   await ffmpeg.run(
     '-ss',
-    getFFMpegTimestampFromSeconds(startTime),
+    getFFMpegTimestampFromSeconds(trimStartTime),
     '-to',
-    getFFMpegTimestampFromSeconds(endTime),
+    getFFMpegTimestampFromSeconds(trimEndTime),
     '-i',
     videoMetadata.name,
     '-c',

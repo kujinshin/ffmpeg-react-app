@@ -15,7 +15,10 @@ export const Timeline = ({ videoMetadata }) => {
   }, [videoMetadata, isLoaded, ffmpeg]);
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{
+      display: 'flex', overflow: 'scroll',
+      padding: '1rem 0px'
+    }}>
       {thumbnails.map((imgURL, id) => (
         <img
           width={100}

@@ -24,7 +24,7 @@ export const TestBench = () => {
     const start = performance.now();
     const { feature } = formData;
     setSelectedFeature(feature);
-    
+
     let outputSrc;
     if (feature === 'Boomerang') {
       outputSrc = await ExecuteBoomerangCommand({
@@ -38,6 +38,12 @@ export const TestBench = () => {
         ffmpeg,
         ...formData
       })
+    } else if(feature === 'Trim') {
+      outputSrc = await ExecuteTrimCommand({
+        videoMetadata,
+        ffmpeg,
+        ...formData
+      });
     } else {
       throw new Error(`unimplemented feature ${feature}`);
     }
