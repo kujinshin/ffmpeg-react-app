@@ -12,22 +12,23 @@ const FEATURE_OPTIONS = ['Boomerang', 'Thumbnail', 'Trimming'];
 
 export const TestBench = () => {
   const { ffmpeg, isLoaded } = useContext(WasmContext);
-  const [videoMetadata, setVideoMetadata] = useState();
+  const [videoMetadata, setVideoMetadata] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState('');
   const [outputSrc, setOutputSrc] = useState();
+
+  const [commandOptions, setCommandOptions] = useState();
 
   const handleFileLoaded = fileData => {
     console.log(fileData);
     setVideoMetadata(fileData);
   };
 
-  const handleTranscode = async () => {
+  const onFormSubmit = async (formData) => {
+    setOutputSrc(null);
     const outputSrc = await ExecuteBoomerangCommand({
       videoMetadata,
       ffmpeg,
-      targetHeight: 360,
-      startTime: 4,
-      duration: 1
+      ...formData
     });
     setOutputSrc(outputSrc);
 
@@ -48,29 +49,22 @@ export const TestBench = () => {
       </div>
       <Timeline videoMetadata={videoMetadata} />
       <div id='feature-select' style={{ paddingTop: '1rem' }}>
-        <select
-          value={selectedFeature}
-          onChange={e => setSelectedFeature(e.target.value)}
-        >
-          {FEATURE_OPTIONS.map(elem => (
-            <option key={elem} value={elem}>
-              {elem}
-            </option>
-          ))}
-        </select>
-
-        <button disabled={!isLoaded} onClick={handleTranscode}>
-          Start
-        </button>
+        {videoMetadata && (
+          <TestBenchForm 
+            fileData={videoMetadata} 
+            onSubmit={onFormSubmit}
+          /> 
+        )}
       </div>
       <div>
         {outputSrc && (
-          <video
-            src={outputSrc}
-            autoPlay
-            loop
-            style={{ width: '100%', height: '100%' }}
-          />
+          <a target="_blank" href={outputSrc}>Link</a>
+          // <video
+          //   src={outputSrc}
+          //   autoPlay
+          //   loop
+          //   // style={{ width: '100%', height: '100%' }}
+          // />
         )}
       </div>
     </div>
