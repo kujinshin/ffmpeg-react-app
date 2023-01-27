@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import React, { useContext, useState } from 'react';
+import { fetchFile } from '@ffmpeg/ffmpeg';
+import { WasmContext } from '../context/WasmContext';
 
 function Boomerang() {
+  const {ffmpeg, isLoaded} = useContext(WasmContext);
+
   const [message, setMessage] = useState('Click Start to transcode');
   const [videoSrc, setVideoSrc] = useState('');
-  const ffmpeg = createFFmpeg({
-    log: true,
-  });
+
   const doTranscode = async () => {
-    setMessage('Loading ffmpeg-core.js');
-    await ffmpeg.load();
     setMessage('Start transcoding');
     ffmpeg.FS('writeFile', 'test.avi', await fetchFile('/flame.avi'));
     await ffmpeg.run(
@@ -26,8 +25,7 @@ function Boomerang() {
     <div className="App">
       <p/>
       <video src={videoSrc} autoPlay loop></video><br/>
-
-      <button onClick={doTranscode}>Start</button>
+      <button disabled={!isLoaded} onClick={doTranscode}>Start</button>
       <p>{message}</p>
     </div>
   );
