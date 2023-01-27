@@ -1,8 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { TestBenchForm } from '../components/TestBenchForm';
 import { UploadVideoFileInput } from '../components/UploadVideoFileInput';
 import { WasmContext } from '../context/WasmContext';
-import { ExecuteBoomerangCommand } from '../service/ffmpegUtils';
+import {
+  ExecuteBoomerangCommand,
+  ExecuteTrimCommand
+} from '../service/ffmpegUtils';
 import { Timeline } from '../components/Timeline';
 
 const FEATURE_OPTIONS = ['Boomerang', 'Thumbnail', 'Trimming'];
@@ -26,8 +29,16 @@ export const TestBench = () => {
       startTime: 4,
       duration: 1
     });
-
     setOutputSrc(outputSrc);
+
+    // Example of running the Trim command
+    //const outputSrc = await ExecuteTrimCommand({
+    //  videoMetadata,
+    //  ffmpeg,
+    //  startTime: 1,
+    //  endTime: 3
+    //});
+    //setOutputSrc(outputSrc);
   };
 
   return (
@@ -65,4 +76,3 @@ export const TestBench = () => {
     </div>
   );
 };
-

@@ -42,3 +42,33 @@ export const ExecuteBoomerangCommand = async ({
   );
 };
 
+export const ExecuteTrimCommand = async ({
+  videoMetadata,
+  ffmpeg,
+  startTime,
+  endTime
+}) => {
+  const OUTPUT_FILE_NAME = `out_${videoMetadata.name}`;
+  ffmpeg.FS(
+    'writeFile',
+    videoMetadata.name,
+    await fetchFile(videoMetadata.src)
+  );
+  await ffmpeg.run(
+    '-ss',
+    getFFMpegTimestampFromSeconds(startTime),
+    '-to',
+    getFFMpegTimestampFromSeconds(endTime),
+    '-i',
+    videoMetadata.name,
+    '-c',
+    'copy',
+    OUTPUT_FILE_NAME
+  );
+
+  const data = ffmpeg.FS('readFile', OUTPUT_FILE_NAME);
+
+  return URL.createObjectURL(
+    new Blob([data.buffer], { type: videoMetadata.type })
+  );
+};
