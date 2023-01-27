@@ -18,7 +18,6 @@ export const UploadVideoFileInput = ({
 
     const handleOnChange = (e) => {
         const file = e.target.files[0];
-        console.log(file);
         setVideoFile(file);
     }
 
@@ -26,6 +25,7 @@ export const UploadVideoFileInput = ({
         const el = e.target; 
         onFileLoaded({
             name: videoFile.name,
+            src: videoSrc,
             size: videoFile.size,
             type: videoFile.type,
             duration: el.duration,
@@ -35,8 +35,17 @@ export const UploadVideoFileInput = ({
     }
 
     return (
-        <div style={{display: 'column', gap: 4, justifyContent: 'center'}}>
+        <div 
+            style={{
+                paddingTop: '1rem',
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 4,
+                justifyContent: 'center'
+            }}>
             <input
+                style={{display: 'block'}}
                 type='file'
                 onChange={handleOnChange}
             />
